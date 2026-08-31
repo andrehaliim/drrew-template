@@ -1,3 +1,2 @@
-# drrew_template
-
-A new Flutter project.
+# drrew-template
+Template for me creating flutter app
