@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../domain/auth_status.dart';
+import '../models/auth_status.dart';
 
 part 'auth_provider.g.dart';
 

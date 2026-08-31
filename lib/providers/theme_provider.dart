@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../core/providers/shared_preferences_provider.dart';
+import 'shared_preferences_provider.dart';
 
 part 'theme_provider.g.dart';
 

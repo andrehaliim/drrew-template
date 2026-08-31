@@ -1,9 +1,9 @@
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../features/auth/domain/auth_status.dart';
-import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../../features/auth/presentation/screens/login_screen.dart';
-import '../../features/home/presentation/screens/home_screen.dart';
+import '../models/auth_status.dart';
+import '../providers/auth_provider.dart';
+import '../screens/login_screen.dart';
+import '../screens/home_screen.dart';
 import 'app_routes.dart';
 import 'router_refresh_notifier.dart';
 

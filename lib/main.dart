@@ -1,8 +1,8 @@
-import 'package:drrew_template/config/router/app_router.dart';
-import 'package:drrew_template/core/providers/theme_provider.dart';
+import 'package:drrew_template/router/app_router.dart';
+import 'package:drrew_template/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'config/theme/app_theme.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
