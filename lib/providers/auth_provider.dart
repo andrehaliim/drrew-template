@@ -1,20 +1,30 @@
+import 'package:drrew_template/models/auth_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../models/auth_status.dart';
 
 part 'auth_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class AuthController extends _$AuthController {
   @override
-  AuthStatus build() {
-    return AuthStatus.unauthenticated;
+  AuthState build() {
+    return const AuthState(status: AuthStatus.unauthenticated);
   }
 
-  void login() {
-    state = AuthStatus.authenticated;
+  Future<void> login(String email, String password) async {
+    state = const AuthState(status: AuthStatus.loading);
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (email == 'admin@mail.com' && password == 'welcome123') {
+      state = const AuthState(status: AuthStatus.authenticated);
+    } else {
+      state = const AuthState(
+        status: AuthStatus.error,
+        errorMessage: 'Email atau password salah.',
+      );
+    }
   }
 
   void logout() {
-    state = AuthStatus.unauthenticated;
+    state = const AuthState(status: AuthStatus.unauthenticated);
   }
 }

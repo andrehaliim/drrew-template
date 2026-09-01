@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../models/auth_status.dart';
+import '../models/auth_state.dart';
 import '../providers/auth_provider.dart';
 import '../screens/login_screen.dart';
 import '../screens/home_screen.dart';
@@ -28,12 +28,17 @@ GoRouter appRouter(Ref ref) {
       ),
     ],
     redirect: (context, state) {
-      final authStatus = ref.read(authControllerProvider);
+      final authStatus = ref.read(authControllerProvider).status;
       final isLoggingIn = state.matchedLocation == AppRoutes.login;
 
-      if (authStatus == AuthStatus.unknown) return null;
+      final isLoggedOut = authStatus == AuthStatus.unauthenticated ||
+          authStatus == AuthStatus.error;
 
-      if (authStatus == AuthStatus.unauthenticated && !isLoggingIn) {
+      if (authStatus == AuthStatus.initial || authStatus == AuthStatus.loading) {
+        return null;
+      }
+
+      if (isLoggedOut && !isLoggingIn) {
         return AppRoutes.login;
       }
 
