@@ -89,7 +89,7 @@ class AppDialog extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 32),
                   if (type == AppDialogType.confirmation)
                     Row(
                       children: [

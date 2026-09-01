@@ -8,12 +8,12 @@ class ErrorInterceptor extends Interceptor {
       DioExceptionType.connectionTimeout ||
       DioExceptionType.sendTimeout ||
       DioExceptionType.receiveTimeout =>
-        'Koneksi timeout, coba lagi.',
+        'Connection Timeout, try again',
       DioExceptionType.connectionError =>
-        'Tidak ada koneksi internet.',
+        'No internet connection',
       DioExceptionType.badResponse =>
         _messageFromResponse(err.response),
-      _ => 'Terjadi kesalahan, coba lagi.',
+      _ => 'Something went wrong, try again',
     };
 
     final apiException = ApiException(
@@ -29,11 +29,11 @@ class ErrorInterceptor extends Interceptor {
       return response!.data['message'] as String;
     }
     return switch (response?.statusCode) {
-      401 => 'Sesi berakhir, silakan login kembali.',
-      403 => 'Anda tidak memiliki akses.',
-      404 => 'Data tidak ditemukan.',
-      500 => 'Server sedang bermasalah.',
-      _ => 'Terjadi kesalahan, coba lagi.',
+      401 => 'Session ended, please login again.',
+      403 => 'You do not have access.',
+      404 => 'Data not found.',
+      500 => 'Server is having problems.',
+      _ => 'Something went wrong, try again.',
     };
   }
 }

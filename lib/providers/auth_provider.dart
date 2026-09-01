@@ -29,7 +29,7 @@ class AuthController extends _$AuthController {
       state = const AsyncData(
         AuthState(
           status: AuthStatus.error,
-          errorMessage: 'Email atau password salah.',
+          errorMessage: 'Wrong email or password',
         ),
       );
     }
