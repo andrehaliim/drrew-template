@@ -1,30 +1,43 @@
-import 'package:drrew_template/models/auth_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../models/auth_state.dart';
+import 'dio_provider.dart';
+import 'secure_storage_provider.dart';
 
 part 'auth_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class AuthController extends _$AuthController {
   @override
-  AuthState build() {
-    return const AuthState(status: AuthStatus.unauthenticated);
+  Future<AuthState> build() async {
+    final storage = ref.watch(secureStorageProvider);
+    final token = await storage.read(key: tokenStorageKey);
+
+    return AuthState(
+      status: token != null ? AuthStatus.authenticated : AuthStatus.unauthenticated,
+    );
   }
 
   Future<void> login(String email, String password) async {
-    state = const AuthState(status: AuthStatus.loading);
+    state = const AsyncData(AuthState(status: AuthStatus.loading));
     await Future.delayed(const Duration(seconds: 3));
 
     if (email == 'admin@mail.com' && password == 'welcome123') {
-      state = const AuthState(status: AuthStatus.authenticated);
+      final storage = ref.read(secureStorageProvider);
+      await storage.write(key: tokenStorageKey, value: 'dummy_token_12345');
+      state = const AsyncData(AuthState(status: AuthStatus.authenticated));
     } else {
-      state = const AuthState(
-        status: AuthStatus.error,
-        errorMessage: 'Email atau password salah.',
+      state = const AsyncData(
+        AuthState(
+          status: AuthStatus.error,
+          errorMessage: 'Email atau password salah.',
+        ),
       );
     }
   }
 
-  void logout() {
-    state = const AuthState(status: AuthStatus.unauthenticated);
+  Future<void> logout() async {
+    final storage = ref.read(secureStorageProvider);
+    await storage.delete(key: tokenStorageKey);
+    state = const AsyncData(AuthState(status: AuthStatus.unauthenticated));
   }
 }

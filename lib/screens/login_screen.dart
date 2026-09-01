@@ -1,6 +1,5 @@
 import 'package:drrew_template/models/auth_state.dart';
 import 'package:drrew_template/widgets/app_buttons.dart';
-import 'package:drrew_template/widgets/app_dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,26 +49,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final authState = ref.watch(authControllerProvider);
-    final isLoading = authState.isLoading;
-
-    ref.listen<AuthState>(authControllerProvider, (previous, next) {
-      if (next.status == AuthStatus.error) {
+    ref.listen<AsyncValue<AuthState>>(authControllerProvider, (previous, next) {
+      if (next.value?.status == AuthStatus.error) {
         showDialog(
           context: context,
-          barrierDismissible: false,
-          builder: (context) => AppDialog(
-            subtitle: next.errorMessage ?? 'Something went wrong.',
-            onBack: () {
-              Navigator.of(context).pop();
-            },
-            type: AppDialogType.error,
-            title: 'Login Failed',
-            buttonLabel: 'OK',
+          builder: (context) => AlertDialog(
+            title: const Text('Login Gagal'),
+            content: Text(next.value!.errorMessage ?? 'Terjadi kesalahan.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
           ),
         );
       }
     });
+
+    final authAsync = ref.watch(authControllerProvider);
+    final isLoading = authAsync.value?.status == AuthStatus.loading;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,

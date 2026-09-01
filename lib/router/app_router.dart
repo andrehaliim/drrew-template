@@ -28,21 +28,23 @@ GoRouter appRouter(Ref ref) {
       ),
     ],
     redirect: (context, state) {
-      final authStatus = ref.read(authControllerProvider).status;
+      final authAsync = ref.read(authControllerProvider);
       final isLoggingIn = state.matchedLocation == AppRoutes.login;
 
-      final isLoggedOut = authStatus == AuthStatus.unauthenticated ||
-          authStatus == AuthStatus.error;
+      // masih loading (termasuk cek token awal) -> jangan redirect dulu
+      if (!authAsync.hasValue) return null;
 
-      if (authStatus == AuthStatus.initial || authStatus == AuthStatus.loading) {
-        return null;
-      }
+      final status = authAsync.value!.status;
+      final isLoggedOut =
+          status == AuthStatus.unauthenticated || status == AuthStatus.error;
+
+      if (status == AuthStatus.loading) return null;
 
       if (isLoggedOut && !isLoggingIn) {
         return AppRoutes.login;
       }
 
-      if (authStatus == AuthStatus.authenticated && isLoggingIn) {
+      if (status == AuthStatus.authenticated && isLoggingIn) {
         return AppRoutes.home;
       }
 
