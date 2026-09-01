@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:drrew_template/models/auth_state.dart';
 import 'package:drrew_template/widgets/app_buttons.dart';
 import 'package:drrew_template/widgets/app_dialogs.dart';
