@@ -1,10 +1,11 @@
-import 'package:drrew_template/router/app_router.dart';
-import 'package:drrew_template/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'router/app_router.dart';
 import 'theme/app_theme.dart';
+import 'providers/theme_provider.dart';
+import 'config/env/env.dart';
 
-void main() {
+void bootstrap() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -17,11 +18,19 @@ class MyApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
-      title: 'Drrew Template',
+      title: _titleByFlavor(),
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeModeAsync.value ?? ThemeMode.system,
       routerConfig: router,
     );
+  }
+
+  String _titleByFlavor() {
+    return switch (Env.flavor) {
+      AppFlavor.dev => 'Drrew Template DEV',
+      AppFlavor.staging => 'Drrew Template STG',
+      AppFlavor.prod => 'Drrew Template',
+    };
   }
 }
