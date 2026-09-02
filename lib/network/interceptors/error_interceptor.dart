@@ -25,8 +25,8 @@ class ErrorInterceptor extends Interceptor {
   }
 
   String _messageFromResponse(Response? response) {
-    if (response?.data is Map && response?.data['message'] != null) {
-      return response!.data['message'] as String;
+    if (response?.data is Map && response?.data['detail'] != null) {
+      return response!.data['detail'] as String;
     }
     return switch (response?.statusCode) {
       401 => 'Session ended, please login again.',

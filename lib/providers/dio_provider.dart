@@ -6,6 +6,7 @@ import 'secure_storage_provider.dart';
 part 'dio_provider.g.dart';
 
 const tokenStorageKey = 'auth_token';
+const refreshTokenStorageKey = 'refresh_token';
 
 @Riverpod(keepAlive: true)
 Dio dio(Ref ref) {

@@ -9,9 +9,12 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authAsync = ref.watch(authControllerProvider);
+    final name = authAsync.value?.fullName ?? '-';
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Drrew Template'),
+        title: Text(name),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),

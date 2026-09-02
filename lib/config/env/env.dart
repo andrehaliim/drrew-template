@@ -6,7 +6,7 @@ class Env {
   static const flavorName = String.fromEnvironment('FLAVOR', defaultValue: 'dev');
   static const apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://gts-dev.infonetglobal.tech/api',
+    defaultValue: 'http://192.168.6.138:8000',
   );
 
   static AppFlavor get flavor {

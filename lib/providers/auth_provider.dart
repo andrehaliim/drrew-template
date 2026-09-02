@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:drrew_template/network/api_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../models/auth_state.dart';
 import 'dio_provider.dart';
@@ -12,69 +14,104 @@ class AuthController extends _$AuthController {
     final storage = ref.watch(secureStorageProvider);
     final token = await storage.read(key: tokenStorageKey);
 
-    return AuthState(
-      status: token != null
-          ? AuthStatus.authenticated
-          : AuthStatus.unauthenticated,
-    );
+    if (token == null) {
+      return const AuthState(status: AuthStatus.unauthenticated);
+    }
+
+    try {
+      final dio = ref.read(dioProvider);
+      final response = await dio.get('/auth/me');
+      final data = response.data as Map<String, dynamic>;
+
+      return AuthState(
+        status: AuthStatus.authenticated,
+        userId: data['id'] as int?,
+        email: data['email'] as String?,
+        fullName: data['full_name'] as String?,
+      );
+    } on DioException {
+      await storage.delete(key: tokenStorageKey);
+      await storage.delete(key: refreshTokenStorageKey);
+      return const AuthState(status: AuthStatus.unauthenticated);
+    }
   }
 
   Future<void> login(String email, String password) async {
     state = const AsyncData(AuthState(status: AuthStatus.loading));
-    await Future.delayed(const Duration(seconds: 3));
-    if (email == 'admin@mail.com' && password == 'welcome123') {
-      final storage = ref.read(secureStorageProvider);
-      await storage.write(key: tokenStorageKey, value: 'dummy_token_12345');
-      state = const AsyncData(AuthState(status: AuthStatus.authenticated));
-    } else {
-      state = const AsyncData(
-        AuthState(
-          status: AuthStatus.error,
-          errorMessage: 'Wrong email or password',
-        ),
-      );
-    }
 
-    // TODO: Uncomment for real API integration
-    /*final dio = ref.read(dioProvider);
+    final dio = ref.read(dioProvider);
     final storage = ref.read(secureStorageProvider);
 
     try {
       final response = await dio.post(
-        '/user/login',
+        '/auth/login',
         data: {
-          'username': username,
+          'email': email,
           'password': password,
         },
       );
 
-      final data = response.data['data'] as Map<String, dynamic>;
-      final token = data['token'] as String;
+      final data = response.data as Map<String, dynamic>;
+      final accessToken = data['access_token'] as String;
+      final refreshToken = data['refresh_token'] as String;
 
-      await storage.write(key: tokenStorageKey, value: token);
+      await storage.write(key: tokenStorageKey, value: accessToken);
+      await storage.write(key: refreshTokenStorageKey, value: refreshToken);
+
+      final meResponse = await dio.get('/auth/me');
+      final me = meResponse.data as Map<String, dynamic>;
 
       state = AsyncData(
         AuthState(
           status: AuthStatus.authenticated,
-          userId: data['ID'] as int?,
-          nickname: data['nickname'] as String?,
-          branchNo: data['BranchNo'] as String?,
+          userId: me['id'] as int?,
+          email: me['email'] as String?,
+          fullName: me['full_name'] as String?,
         ),
       );
     } on DioException catch (e) {
       final message = e.error is ApiException
           ? (e.error as ApiException).message
-          : 'Login failed, try again.';
+          : 'Login gagal, coba lagi.';
 
       state = AsyncData(
         AuthState(status: AuthStatus.error, errorMessage: message),
       );
-    }*/
+    }
+  }
+
+  Future<void> register({
+    required String email,
+    required String password,
+    String? fullName,
+  }) async {
+    final dio = ref.read(dioProvider);
+
+    try {
+      await dio.post(
+        '/auth/register',
+        data: {
+          'email': email,
+          'password': password,
+          'full_name': fullName ?? 'User',
+        },
+      );
+      await login(email, password);
+    } on DioException catch (e) {
+      final message = e.error is ApiException
+          ? (e.error as ApiException).message
+          : 'Registrasi gagal, coba lagi.';
+
+      state = AsyncData(
+        AuthState(status: AuthStatus.error, errorMessage: message),
+      );
+    }
   }
 
   Future<void> logout() async {
     final storage = ref.read(secureStorageProvider);
     await storage.delete(key: tokenStorageKey);
+    await storage.delete(key: refreshTokenStorageKey);
     state = const AsyncData(AuthState(status: AuthStatus.unauthenticated));
   }
 }
