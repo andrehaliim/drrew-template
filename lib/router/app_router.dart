@@ -4,6 +4,7 @@ import '../models/auth_state.dart';
 import '../providers/auth_provider.dart';
 import '../screens/login_screen.dart';
 import '../screens/home_screen.dart';
+import '../screens/splash_screen.dart';
 import 'app_routes.dart';
 import 'router_refresh_notifier.dart';
 
@@ -15,9 +16,13 @@ GoRouter appRouter(Ref ref) {
   ref.onDispose(refreshNotifier.dispose);
 
   return GoRouter(
-    initialLocation: AppRoutes.home,
+    initialLocation: AppRoutes.splash,
     refreshListenable: refreshNotifier,
     routes: [
+      GoRoute(
+        path: AppRoutes.splash,
+        builder: (context, state) => const SplashScreen(),
+      ),
       GoRoute(
         path: AppRoutes.home,
         builder: (context, state) => const HomeScreen(),
@@ -29,23 +34,30 @@ GoRouter appRouter(Ref ref) {
     ],
     redirect: (context, state) {
       final authAsync = ref.read(authControllerProvider);
-      final isLoggingIn = state.matchedLocation == AppRoutes.login;
+      final currentLocation = state.matchedLocation;
+      final isLoggingIn = currentLocation == AppRoutes.login;
+      final isSplash = currentLocation == AppRoutes.splash;
 
-      // masih loading (termasuk cek token awal) -> jangan redirect dulu
-      if (!authAsync.hasValue) return null;
+      // Belum ada value sama sekali (initial token check di build())
+      // -> ini SATU-SATUNYA kondisi yang trigger splash.
+      if (!authAsync.hasValue) {
+        return isSplash ? null : AppRoutes.splash;
+      }
 
       final status = authAsync.value!.status;
       final isLoggedOut =
           status == AuthStatus.unauthenticated || status == AuthStatus.error;
 
-      if (status == AuthStatus.loading) return null;
-
-      if (isLoggedOut && !isLoggingIn) {
-        return AppRoutes.login;
+      // status == AuthStatus.loading (saat submit login/register) TIDAK
+      // memicu splash lagi -- itu urusan tombol di LoginScreen.
+      if (isLoggedOut) {
+        return isLoggingIn ? null : AppRoutes.login;
       }
 
-      if (status == AuthStatus.authenticated && isLoggingIn) {
-        return AppRoutes.home;
+      if (status == AuthStatus.authenticated) {
+        if (isLoggingIn || isSplash) {
+          return AppRoutes.home;
+        }
       }
 
       return null;
