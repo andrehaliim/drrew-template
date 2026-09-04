@@ -31,7 +31,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _regEmailFocus = FocusNode();
   final _regPasswordFocus = FocusNode();
 
-  bool _obscurePassword = true;
   bool _isFieldFocused = false;
   bool _isRegister = false;
 

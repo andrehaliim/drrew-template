@@ -1,6 +1,3 @@
-// lib/screens/home_screen.dart
-import 'package:drrew_template/providers/auth_provider.dart';
-import 'package:drrew_template/providers/theme_provider.dart';
 import 'package:drrew_template/widgets/app_buttons.dart';
 import 'package:drrew_template/widgets/app_dialogs.dart';
 import 'package:drrew_template/widgets/app_textformfield.dart';
