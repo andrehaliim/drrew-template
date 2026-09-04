@@ -1,3 +1,4 @@
+import 'package:drrew_template/widgets/app_messenger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'router/app_router.dart';
@@ -23,6 +24,7 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       themeMode: themeModeAsync.value ?? ThemeMode.system,
       routerConfig: router,
+      scaffoldMessengerKey: scaffoldMessengerKey,
     );
   }
 

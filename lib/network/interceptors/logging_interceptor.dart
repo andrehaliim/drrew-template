@@ -15,6 +15,9 @@ class LoggingInterceptor extends Interceptor {
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
       debugPrint('✅ ${response.statusCode} ${response.requestOptions.uri}');
+      if (response.requestOptions.path.contains('/auth/refresh')) {
+        debugPrint('   New tokens: ${response.data}');
+      }
     }
     handler.next(response);
   }

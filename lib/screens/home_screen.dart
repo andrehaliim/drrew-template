@@ -1,3 +1,4 @@
+// lib/screens/home_screen.dart
 import 'package:drrew_template/providers/auth_provider.dart';
 import 'package:drrew_template/providers/theme_provider.dart';
 import 'package:drrew_template/widgets/app_dialogs.dart';
@@ -40,13 +41,21 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            ref.read(themeModeControllerProvider.notifier).toggle();
-          },
-          child: const Text('Toggle Theme'),
-        ),
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              ref.read(authControllerProvider.notifier).refreshUser();
+            },
+            child: const Text('call get/me'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              ref.read(themeModeControllerProvider.notifier).toggle();
+            },
+            child: const Text('Toggle Theme'),
+          ),
+        ],
       ),
     );
   }
