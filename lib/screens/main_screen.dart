@@ -1,4 +1,5 @@
 // lib/screens/main_screen.dart
+import 'package:drrew_template/widgets/app_navbar.dart';
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'menu_one_screen.dart';
@@ -24,6 +25,13 @@ class _MainScreenState extends State<MainScreen> {
     SettingsScreen(),
   ];
 
+  static const _items = [
+    AppNavItem(icon: Icons.home_outlined, selectedIcon: Icons.home, label: 'Home'),
+    AppNavItem(icon: Icons.widgets_outlined, selectedIcon: Icons.widgets, label: 'Menu 1'),
+    AppNavItem(icon: Icons.dashboard_outlined, selectedIcon: Icons.dashboard, label: 'Menu 2'),
+    AppNavItem(icon: Icons.settings_outlined, selectedIcon: Icons.settings, label: 'Settings'),
+  ];
+
   void _onDestinationSelected(int index) {
     setState(() => _currentIndex = index);
   }
@@ -35,15 +43,10 @@ class _MainScreenState extends State<MainScreen> {
         index: _currentIndex,
         children: _pages,
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: _onDestinationSelected,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.widgets_outlined), selectedIcon: Icon(Icons.widgets), label: 'Menu 1'),
-          NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Menu 2'),
-          NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
-        ],
+      bottomNavigationBar: AppBottomNav(
+        items: _items,
+        currentIndex: _currentIndex,
+        onTap: _onDestinationSelected,
       ),
     );
   }
