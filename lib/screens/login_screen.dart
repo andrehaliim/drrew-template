@@ -1,6 +1,7 @@
 import 'package:drrew_template/models/auth_state.dart';
 import 'package:drrew_template/widgets/app_buttons.dart';
 import 'package:drrew_template/widgets/app_dialogs.dart';
+import 'package:drrew_template/widgets/app_textformfield.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,13 +17,19 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _loginFormKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _nameFocus = FocusNode();
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
+
+  final _registerFormKey = GlobalKey<FormState>();
+  final _regEmailController = TextEditingController();
+  final _regPasswordController = TextEditingController();
+  final _regNameController = TextEditingController();
+  final _regNameFocus = FocusNode();
+  final _regEmailFocus = FocusNode();
+  final _regPasswordFocus = FocusNode();
 
   bool _obscurePassword = true;
   bool _isFieldFocused = false;
@@ -31,25 +38,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _nameFocus.addListener(_handleFocusChange);
     _emailFocus.addListener(_handleFocusChange);
     _passwordFocus.addListener(_handleFocusChange);
+    _regEmailFocus.addListener(_handleFocusChange);
+    _regPasswordFocus.addListener(_handleFocusChange);
+    _regNameFocus.addListener(_handleFocusChange);
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _nameFocus.dispose();
+    _regEmailController.dispose();
+    _regPasswordController.dispose();
+    _regNameController.dispose();
+
     _emailFocus.dispose();
     _passwordFocus.dispose();
+    _regNameFocus.dispose();
+    _regEmailFocus.dispose();
+    _regPasswordFocus.dispose();
     super.dispose();
   }
 
   void _handleFocusChange() {
-    final anyFocused =
-        _nameFocus.hasFocus || _emailFocus.hasFocus || _passwordFocus.hasFocus;
+    final anyFocused = _emailFocus.hasFocus ||
+        _passwordFocus.hasFocus ||
+        _regNameFocus.hasFocus ||
+        _regEmailFocus.hasFocus ||
+        _regPasswordFocus.hasFocus;
     if (anyFocused != _isFieldFocused) {
       setState(() => _isFieldFocused = anyFocused);
     }
@@ -165,7 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = provider.value?.status == AuthStatus.loading;
 
     return Form(
-      key: _formKey,
+      key: _loginFormKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -188,170 +205,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
           const SizedBox(height: 24),
 
-          Text(
-            'Email Address',
-            style: GoogleFonts.inter(
-              fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-              color: Colors.black,
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          TextFormField(
+          AppTextFormField(
+            label: 'Email Address',
             controller: _emailController,
             focusNode: _emailFocus,
-            keyboardType: TextInputType.emailAddress,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xFFF5F5F5),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Color(0xFF1A1A1A),
-                  width: 1.5,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Colors.redAccent,
-                  width: 1.5,
-                ),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Colors.redAccent,
-                  width: 1.5,
-                ),
-              ),
-              errorStyle: const TextStyle(
-                fontSize: 12,
-                color: Colors.redAccent,
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your email';
-              }
-              final emailRegex = RegExp(
-                r'^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$',
-              );
-              if (!emailRegex.hasMatch(value.trim())) {
-                return 'Enter a valid email address';
-              }
-              return null;
-            },
+            type: AppTextFieldType.email,
           ),
 
           const SizedBox(height: 16),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Password',
+          AppTextFormField(
+            label: 'Password',
+            controller: _passwordController,
+            focusNode: _passwordFocus,
+            type: AppTextFieldType.password,
+            labelTrailing: GestureDetector(
+              onTap: () {},
+              child: Text(
+                'Forgot?',
                 style: GoogleFonts.inter(
                   fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                  color: Colors.black,
+                  color: Theme.of(context).primaryColor,
                 ),
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: Text(
-                  'Forgot?',
-                  style: GoogleFonts.inter(
-                    fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 8),
-
-          TextFormField(
-            controller: _passwordController,
-            obscureText: _obscurePassword,
-            focusNode: _passwordFocus,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xFFF5F5F5),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Color(0xFF1A1A1A),
-                  width: 1.5,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Colors.redAccent,
-                  width: 1.5,
-                ),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Colors.redAccent,
-                  width: 1.5,
-                ),
-              ),
-              errorStyle: const TextStyle(
-                fontSize: 12,
-                color: Colors.redAccent,
-              ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  color: const Color(0xFF9E9E9E),
-                  size: 20,
-                ),
-                onPressed: () {
-                  setState(() => _obscurePassword = !_obscurePassword);
-                },
               ),
             ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your password';
-              }
-              if (value.length < 6) {
-                return 'Password must be at least 6 characters';
-              }
-              return null;
-            },
           ),
 
           const SizedBox(height: 24),
@@ -370,7 +247,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onPressed: () async {
                 FocusScope.of(context).unfocus();
                 setState(() => _isFieldFocused = false);
-                if (_formKey.currentState!.validate()) {
+                if (_loginFormKey.currentState!.validate()) {
                   ref
                       .read(authControllerProvider.notifier)
                       .login(
@@ -416,7 +293,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = provider.value?.status == AuthStatus.loading;
 
     return Form(
-      key: _formKey,
+      key: _registerFormKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -439,229 +316,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
           const SizedBox(height: 24),
 
-          Text(
-            'Name',
-            style: GoogleFonts.inter(
-              fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-              color: Colors.black,
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          TextFormField(
-            controller: _nameController,
-            focusNode: _nameFocus,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xFFF5F5F5),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Color(0xFF1A1A1A),
-                  width: 1.5,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Colors.redAccent,
-                  width: 1.5,
-                ),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Colors.redAccent,
-                  width: 1.5,
-                ),
-              ),
-              errorStyle: const TextStyle(
-                fontSize: 12,
-                color: Colors.redAccent,
-              ),
-            ),
+          AppTextFormField(
+            label: 'Name',
+            controller: _regNameController,
+            focusNode: _regNameFocus,
+            type: AppTextFieldType.normal,
           ),
 
           const SizedBox(height: 16),
 
-          Text(
-            'Email Address',
-            style: GoogleFonts.inter(
-              fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-              color: Colors.black,
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          TextFormField(
-            controller: _emailController,
-            focusNode: _emailFocus,
-            keyboardType: TextInputType.emailAddress,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xFFF5F5F5),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Color(0xFF1A1A1A),
-                  width: 1.5,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Colors.redAccent,
-                  width: 1.5,
-                ),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Colors.redAccent,
-                  width: 1.5,
-                ),
-              ),
-              errorStyle: const TextStyle(
-                fontSize: 12,
-                color: Colors.redAccent,
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your email';
-              }
-              final emailRegex = RegExp(
-                r'^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$',
-              );
-              if (!emailRegex.hasMatch(value.trim())) {
-                return 'Enter a valid email address';
-              }
-              return null;
-            },
+          AppTextFormField(
+            label: 'Email Address',
+            controller: _regEmailController,
+            focusNode: _regEmailFocus,
+            type: AppTextFieldType.email,
           ),
 
           const SizedBox(height: 16),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Password',
-                style: GoogleFonts.inter(
-                  fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                  color: Colors.black,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: Text(
-                  'Forgot?',
-                  style: GoogleFonts.inter(
-                    fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 8),
-
-          TextFormField(
-            controller: _passwordController,
-            obscureText: _obscurePassword,
-            focusNode: _passwordFocus,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xFFF5F5F5),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Color(0xFF1A1A1A),
-                  width: 1.5,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Colors.redAccent,
-                  width: 1.5,
-                ),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Colors.redAccent,
-                  width: 1.5,
-                ),
-              ),
-              errorStyle: const TextStyle(
-                fontSize: 12,
-                color: Colors.redAccent,
-              ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  color: const Color(0xFF9E9E9E),
-                  size: 20,
-                ),
-                onPressed: () {
-                  setState(() => _obscurePassword = !_obscurePassword);
-                },
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your password';
-              }
-              if (value.length < 6) {
-                return 'Password must be at least 6 characters';
-              }
-              return null;
-            },
+          AppTextFormField(
+            label: 'Password',
+            controller: _regPasswordController,
+            focusNode: _regPasswordFocus,
+            type: AppTextFieldType.password,
           ),
 
           const SizedBox(height: 24),
@@ -680,13 +357,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onPressed: () async {
                 FocusScope.of(context).unfocus();
                 setState(() => _isFieldFocused = false);
-                if (_formKey.currentState!.validate()) {
+                if (_registerFormKey.currentState!.validate()) {
                   ref
                       .read(authControllerProvider.notifier)
                       .register(
-                        email: _emailController.text.trim(),
-                        password: _passwordController.text.trim(),
-                        fullName: _nameController.text.trim(),
+                        email: _regEmailController.text.trim(),
+                        password: _regPasswordController.text.trim(),
+                        fullName: _regNameController.text.trim(),
                       );
                 }
               },
