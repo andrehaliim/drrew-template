@@ -12,7 +12,11 @@ class AppButtons {
     double height = 50,
     double borderRadius = 12,
   }) {
-    final resolvedColor = color ?? Theme.of(context).primaryColor;
+    final colorScheme = Theme.of(context).colorScheme;
+    final resolvedColor = color ?? colorScheme.primary;
+    final resolvedTextColor = color != null
+        ? _contrastingTextColor(color)
+        : colorScheme.onPrimary;
 
     return SizedBox(
       width: double.infinity,
@@ -21,7 +25,13 @@ class AppButtons {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: resolvedColor,
-          foregroundColor: Colors.white,
+          foregroundColor: resolvedTextColor,
+          disabledBackgroundColor: colorScheme.onSurface.withValues(
+            alpha: 0.12,
+          ),
+          disabledForegroundColor: colorScheme.onSurface.withValues(
+            alpha: 0.38,
+          ),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
@@ -31,7 +41,7 @@ class AppButtons {
           context: context,
           label: label,
           isLoading: isLoading,
-          textColor: Colors.white,
+          textColor: resolvedTextColor,
           trailing: trailing,
           leading: leading,
         ),
@@ -50,7 +60,8 @@ class AppButtons {
     double height = 50,
     double borderRadius = 12,
   }) {
-    final resolvedColor = color ?? Theme.of(context).primaryColor;
+    final colorScheme = Theme.of(context).colorScheme;
+    final resolvedColor = color ?? colorScheme.primary;
 
     return SizedBox(
       width: double.infinity,
@@ -59,6 +70,9 @@ class AppButtons {
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
           side: BorderSide(color: resolvedColor, width: 1),
+          disabledForegroundColor: colorScheme.onSurface.withValues(
+            alpha: 0.38,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
@@ -109,5 +123,12 @@ class AppButtons {
         if (trailing != null) ...[const SizedBox(width: 8), trailing],
       ],
     );
+  }
+
+  /// Kalau caller kirim custom `color` (misal merah buat delete),
+  /// pilih teks hitam/putih berdasarkan luminance-nya biar tetep kontras
+  /// di light maupun dark theme.
+  static Color _contrastingTextColor(Color background) {
+    return background.computeLuminance() > 0.5 ? Colors.black : Colors.white;
   }
 }

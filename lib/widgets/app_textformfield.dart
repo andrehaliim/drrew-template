@@ -15,6 +15,7 @@ class AppTextFormField extends StatefulWidget {
     this.textInputAction,
     this.onFieldSubmitted,
     this.labelTrailing,
+    this.maxLines = 1,
   });
 
   final String label;
@@ -30,6 +31,7 @@ class AppTextFormField extends StatefulWidget {
 
   /// Widget opsional di sebelah kanan label, contoh: link "Forgot?"
   final Widget? labelTrailing;
+  final int maxLines;
 
   @override
   State<AppTextFormField> createState() => _AppTextFormFieldState();
@@ -83,6 +85,8 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -103,11 +107,17 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
           keyboardType: _keyboardType,
           textInputAction: widget.textInputAction,
           onFieldSubmitted: widget.onFieldSubmitted,
-          style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
+          style: TextStyle(fontSize: 14, color: colorScheme.onSurface),
+          maxLines: widget.maxLines,
           decoration: InputDecoration(
             hintText: widget.hintText,
+            hintStyle: TextStyle(
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+            ),
             filled: true,
-            fillColor: const Color(0xFFF5F5F5),
+            fillColor: colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.5,
+            ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
@@ -122,24 +132,24 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF1A1A1A), width: 1),
+              borderSide: BorderSide(color: colorScheme.primary, width: 1),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+              borderSide: BorderSide(color: colorScheme.error, width: 1),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+              borderSide: BorderSide(color: colorScheme.error, width: 1),
             ),
-            errorStyle: const TextStyle(fontSize: 12, color: Colors.redAccent),
+            errorStyle: TextStyle(fontSize: 12, color: colorScheme.error),
             suffixIcon: _isPassword
                 ? IconButton(
                     icon: Icon(
                       _obscureText
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
-                      color: const Color(0xFF9E9E9E),
+                      color: colorScheme.onSurfaceVariant,
                       size: 20,
                     ),
                     onPressed: () =>
@@ -154,11 +164,12 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
   }
 
   Text _label(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Text(
       widget.label,
       style: GoogleFonts.inter(
         fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-        color: Colors.black,
+        color: colorScheme.onSurface,
       ),
     );
   }

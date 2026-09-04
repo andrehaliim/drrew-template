@@ -27,14 +27,14 @@ class AppDialog extends StatelessWidget {
   static const double _circleSize = 96;
   static const double _circleOverlap = _circleSize / 2;
 
-  Color get _accentColor {
+  Color _accentColor(ColorScheme colorScheme) {
     switch (type) {
       case AppDialogType.success:
         return Colors.green;
       case AppDialogType.error:
-        return Colors.red;
+        return colorScheme.error;
       case AppDialogType.confirmation:
-        return Colors.blue;
+        return colorScheme.primary;
     }
   }
 
@@ -51,13 +51,16 @@ class AppDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final accentColor = _accentColor(colorScheme);
+
     return Center(
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.topCenter,
         children: [
           Material(
-            color: Colors.white,
+            color: colorScheme.surfaceContainerHigh,
             elevation: 24,
             borderRadius: BorderRadius.circular(14),
             child: Container(
@@ -75,7 +78,7 @@ class AppDialog extends StatelessWidget {
                     title,
                     style: GoogleFonts.inter(
                       fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
-                      color: Colors.black,
+                      color: colorScheme.onSurface,
                       fontWeight: FontWeight.w700,
                     ),
                     textAlign: TextAlign.center,
@@ -85,7 +88,7 @@ class AppDialog extends StatelessWidget {
                     subtitle,
                     style: GoogleFonts.inter(
                       fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                      color: Colors.black,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -97,7 +100,7 @@ class AppDialog extends StatelessWidget {
                           child: AppButtons.outlinedButton(
                             context: context,
                             label: cancelLabel,
-                            color: _accentColor,
+                            color: accentColor,
                             onPressed: onCancel,
                           ),
                         ),
@@ -106,7 +109,7 @@ class AppDialog extends StatelessWidget {
                           child: AppButtons.filledButton(
                             context: context,
                             label: buttonLabel,
-                            color: _accentColor,
+                            color: accentColor,
                             onPressed: onBack,
                           ),
                         ),
@@ -116,7 +119,7 @@ class AppDialog extends StatelessWidget {
                     AppButtons.filledButton(
                       context: context,
                       label: buttonLabel,
-                      color: _accentColor,
+                      color: accentColor,
                       onPressed: onBack,
                     ),
                 ],
@@ -130,12 +133,12 @@ class AppDialog extends StatelessWidget {
               height: _circleSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _accentColor,
-                border: Border.all(color: Colors.white, width: 4),
+                color: accentColor,
+                border: Border.all(color: colorScheme.surface, width: 4),
               ),
               child: Icon(
                 _icon,
-                color: Colors.white,
+                color: colorScheme.onPrimary,
                 size: 40,
               ),
             ),
