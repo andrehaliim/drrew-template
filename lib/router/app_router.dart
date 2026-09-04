@@ -4,7 +4,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../models/auth_state.dart';
 import '../providers/auth_provider.dart';
 import '../screens/login_screen.dart';
-import '../screens/home_screen.dart';
 import '../screens/splash_screen.dart';
 import 'app_routes.dart';
 import 'router_refresh_notifier.dart';

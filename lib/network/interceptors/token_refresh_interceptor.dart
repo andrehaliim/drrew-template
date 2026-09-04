@@ -1,3 +1,4 @@
+// lib/network/interceptors/token_refresh_interceptor.dart
 import 'dart:async';
 import 'package:dio/dio.dart';
 
@@ -19,33 +20,37 @@ class TokenRefreshInterceptor extends Interceptor {
   bool _isRefreshing = false;
   final List<Completer<void>> _waiters = [];
 
+  // Endpoint-endpoint ini 401-nya bukan berarti access token expired,
+  // jadi jangan pernah dianggap sebagai trigger auto-refresh.
+  static const _excludedPaths = [
+    '/auth/login',
+    '/auth/register',
+    '/auth/refresh',
+    '/auth/logout',
+  ];
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     final isUnauthorized = err.response?.statusCode == 401;
-    final isRefreshCall = err.requestOptions.path.contains('/auth/refresh');
+    final isExcluded = _excludedPaths.any(
+      (path) => err.requestOptions.path.contains(path),
+    );
 
-    // bukan 401, atau ini justru error dari endpoint refresh itu sendiri
-    // (biar gak infinite loop) -> teruskan error apa adanya
-    if (!isUnauthorized || isRefreshCall) {
+    if (!isUnauthorized || isExcluded) {
       return handler.next(err);
     }
 
     try {
       await _refreshToken();
-      // token baru sudah tersimpan, AuthInterceptor akan otomatis
-      // pasang token baru saat request ini di-retry
       final response = await dio.fetch(err.requestOptions);
       return handler.resolve(response);
     } catch (_) {
-      // refresh token juga gagal/expired -> paksa logout
       await onRefreshFailed();
       return handler.next(err);
     }
   }
 
   Future<void> _refreshToken() async {
-    // kalau ada request lain yang lagi nunggu refresh selesai,
-    // ikut antre daripada nembak /auth/refresh berkali-kali bersamaan
     if (_isRefreshing) {
       final completer = Completer<void>();
       _waiters.add(completer);
