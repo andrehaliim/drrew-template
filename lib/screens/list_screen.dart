@@ -1,6 +1,3 @@
-// lib/screens/list_screen.dart
-import 'dart:math';
-
 import 'package:drrew_template/network/api_exception.dart';
 import 'package:drrew_template/widgets/app_dialogs.dart';
 import 'package:drrew_template/widgets/app_shimmer.dart';
@@ -155,9 +152,7 @@ class _ListScreenState extends State<ListScreen> {
                   ),
                   color: colorScheme.surfaceContainerHigh,
                   onSelected: (value) {
-                    if (value == 'edit') {
-                      // TODO: edit note
-                    } else if (value == 'delete') {
+                    if (value == 'edit') {} else if (value == 'delete') {
                       showDialog(
                         context: context,
                         barrierDismissible: false,
