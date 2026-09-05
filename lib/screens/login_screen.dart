@@ -31,6 +31,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _regEmailFocus = FocusNode();
   final _regPasswordFocus = FocusNode();
 
+  bool _obscurePassword = true;
   bool _isFieldFocused = false;
   bool _isRegister = false;
 
@@ -74,6 +75,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final colorScheme = Theme.of(context).colorScheme;
     final authProvider = ref.watch(authControllerProvider);
     ref.listen<AsyncValue<AuthState>>(authControllerProvider, (previous, next) {
       if (next.value?.status == AuthStatus.error) {
@@ -96,10 +98,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          Container(color: Theme.of(context).primaryColor),
+          Container(color: colorScheme.primary),
           CustomPaint(
             painter: GridPainter(
-              lineColor: Colors.white.withValues(alpha: 0.1),
+              lineColor: colorScheme.onPrimary.withValues(alpha: 0.1),
               gridSize: 28,
             ),
             child: const SizedBox.expand(),
@@ -125,7 +127,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           .headlineSmall
                           ?.fontSize,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: colorScheme.onPrimary,
                     ),
                   ),
                   SizedBox(height: 10),
@@ -133,7 +135,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     'This is my template app for upcoming projects',
                     style: GoogleFonts.inter(
                       fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                      color: Colors.white,
+                      color: colorScheme.onPrimary,
                     ),
                   ),
                 ],
@@ -154,11 +156,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             right: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colorScheme.surface,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: colorScheme.shadow.withValues(alpha: 0.15),
                     blurRadius: 32,
                     offset: Offset(0, -8),
                   ),
@@ -179,6 +181,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Form _loginForm(AsyncValue<AuthState> provider) {
     final isLoading = provider.value?.status == AuthStatus.loading;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Form(
       key: _loginFormKey,
@@ -190,7 +193,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             style: GoogleFonts.outfit(
               fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
               fontWeight: FontWeight.w700,
-              color: Colors.black,
+              color: colorScheme.onSurface,
             ),
           ),
 
@@ -198,7 +201,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             'Sign in to your workspace',
             style: GoogleFonts.inter(
               fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-              color: Colors.black.withValues(alpha: 0.5),
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
 
@@ -224,7 +227,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 'Forgot?',
                 style: GoogleFonts.inter(
                   fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                  color: Theme.of(context).primaryColor,
+                  color: colorScheme.primary,
                 ),
               ),
             ),
@@ -265,14 +268,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             text: TextSpan(
               style: GoogleFonts.inter(
                 fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                color: Colors.black.withValues(alpha: 0.5),
+                color: colorScheme.onSurfaceVariant,
               ),
               children: [
                 TextSpan(text: 'Don\'t have an account? '),
                 TextSpan(
                   text: 'Register',
                   style: TextStyle(
-                    color: Theme.of(context).primaryColor,
+                    color: colorScheme.primary,
                     fontWeight: FontWeight.w700,
                   ),
                   recognizer: TapGestureRecognizer()
@@ -290,6 +293,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Form _registerForm(AsyncValue<AuthState> provider) {
     final isLoading = provider.value?.status == AuthStatus.loading;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Form(
       key: _registerFormKey,
@@ -301,7 +305,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             style: GoogleFonts.outfit(
               fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
               fontWeight: FontWeight.w700,
-              color: Colors.black,
+              color: colorScheme.onSurface,
             ),
           ),
 
@@ -309,7 +313,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             'Create a new account',
             style: GoogleFonts.inter(
               fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-              color: Colors.black.withValues(alpha: 0.5),
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
 
@@ -376,14 +380,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             text: TextSpan(
               style: GoogleFonts.inter(
                 fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                color: Colors.black.withValues(alpha: 0.5),
+                color: colorScheme.onSurfaceVariant,
               ),
               children: [
                 TextSpan(text: 'Already have an account? '),
                 TextSpan(
                   text: 'Login',
                   style: TextStyle(
-                    color: Theme.of(context).primaryColor,
+                    color: colorScheme.primary,
                     fontWeight: FontWeight.w700,
                   ),
                   recognizer: TapGestureRecognizer()
